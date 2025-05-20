@@ -1,85 +1,63 @@
-import { useState, useEffect } from "react";
+import React, { useState } from 'react'; // React is the main character; useState gives us memory powers 🔮
+import axios from 'axios'; // Axios is our messenger pigeon 🕊️ for sending data to the server
 
-export default function App() {
-  // ---------- state ----------
-  const [formData, setFormData] = useState({ name: "", email: "" });
-  const [submittedData, setSubmittedData] = useState([]);
+function App() {
+  // Setting up state to hold the form data—Name, Email, and Age—like a digital notepad 📋
+  const [formData, setFormData] = useState({ Name: '', Email: '', Age: '' });
 
-  // ---------- load saved records at startup ----------
-  useEffect(() => {
-    fetch("http://localhost:5000/get")
-      .then((res) => res.json())
-      .then((data) => setSubmittedData(data))
-      .catch((err) => console.error("GET error:", err));
-  }, []);
-
-  // ---------- handlers ----------
-  const handleChange = (e) =>
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    const res = await fetch("http://localhost:5000/save", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(formData),
-    });
-
-    if (res.ok) {
-      setSubmittedData([...submittedData, formData]);         // optimistic UI
-      setFormData({ name: "", email: "" });                   // reset form
-      alert("Saved!");
-    } else {
-      alert("Save failed ☹");
-    }
+  // This function handles typing in the form fields. Think of it as a scribe that updates our notepad in real time 🖊️
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    // Spread the previous state and update the field that's being changed
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // ---------- UI ----------
+  // The moment of truth 😬 — this function is called when the user hits that juicy "Submit" button
+  const handleSubmit = async (e) => {
+    e.preventDefault(); // Prevents the page from doing a full reload like it's 1999 🚫🔁
+    try {
+      // Send form data to our backend using POST request. Go little data, go! 🚀
+      await axios.post('http://localhost:5000/save', formData);
+      alert('✅ Data saved to server!');
+    } catch (err) {
+      alert('❌ Failed to save in server');
+      console.error(err); // Print the error like a disappointed parent
+    }
+  }; 
+
   return (
-    <div className="flex flex-col items-center min-h-screen bg-gray-100 p-6">
-      <h1 className="text-2xl font-bold mb-4">User Form</h1>
+    <div>
+      {/* The Holy Form - where users pour their digital hearts out 📝 */}
+      <form onSubmit={handleSubmit}>
+        <p>Name</p>
+        <input
+          type="text"
+          name="Name"
+          value={formData.Name}
+          onChange={handleChange} // On every keystroke, we update state
+        />
 
-      {/* form */}
-      <form onSubmit={handleSubmit} className="bg-white p-6 shadow rounded w-96">
+        <p>Email</p>
         <input
-          name="name"
-          placeholder="Name"
-          value={formData.name}
+          type="text"
+          name="Email"
+          value={formData.Email}
           onChange={handleChange}
-          className="border p-2 rounded w-full mb-2"
-          required
         />
+
+        <p>Age</p>
         <input
-          name="email"
-          type="email"
-          placeholder="Email"
-          value={formData.email}
+          type="number"
+          name="Age"
+          value={formData.Age}
           onChange={handleChange}
-          className="border p-2 rounded w-full mb-2"
-          required
         />
-        <button className="bg-blue-500 text-white w-full py-2 rounded">
-          Submit
-        </button>
+
+        {/* Big red button... but not destructive! Just submits the form */}
+        <button type="submit">Submit</button>
       </form>
-
-      {/* list */}
-      <div className="mt-6 w-96">
-        <h2 className="text-lg font-semibold mb-2">Submitted Data:</h2>
-        <ul className="bg-white p-4 shadow rounded">
-          {submittedData.length === 0 ? (
-            <p>No data yet.</p>
-          ) : (
-            submittedData.map((d, i) => (
-              <li key={i} className="border-b p-2 last:border-0">
-                <strong>Name:</strong> {d.name} <br />
-                <strong>Email:</strong> {d.email}
-              </li>
-            ))
-          )}
-        </ul>
-      </div>
     </div>
   );
 }
+
+export default App; // We export the App so other parts of our React kingdom can summon it 👑

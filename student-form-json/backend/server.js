@@ -1,48 +1,37 @@
-const express = require("express");
-const fs = require("fs");
-const cors = require("cors");
-const bodyParser = require("body-parser");
+// Bringing in the cool kids 🎓
+// Express helps us build APIs without losing our minds
+const express = require('express');
 
-const app = express();
-const PORT = 5000;
-const DATA_FILE = "data.json";
+// CORS: Because browsers are dramatic about cross-origin stuff 🛑🎭
+const cors = require('cors');
 
-// ------------ middleware ------------
-app.use(cors({ origin: "http://localhost:5173" }));
-app.use(express.json());
+// fs = File System. Our gateway to reading and writing files like it's 1995 🗃️
+const fs = require('fs');
 
-// ------------ ensure data file exists ------------
-if (!fs.existsSync(DATA_FILE)) fs.writeFileSync(DATA_FILE, "[]", "utf8");
+const app = express(); // Creating our majestic Express app 🌟
+const PORT = 5000; // Our app shall reign on port 5000 🎙️
 
-// ------------ GET /get ------------
-app.get("/get", (_, res) => {
-  fs.readFile(DATA_FILE, "utf8", (err, data) => {
-    if (err) return res.status(500).json({ message: "Read error" });
-    res.json(JSON.parse(data || "[]"));
-  });
-});
+// Middlewares: The gatekeepers of incoming data 🔐
+app.use(cors()); // Allows our frontend (likely running on a different port) to talk to us
+app.use(express.json()); // Parses incoming JSON payloads so we don't have to decode them like cavemen
 
-// ------------ POST /save ------------
-app.post("/save", (req, res) => {
-  const newRecord = req.body;
+// When the frontend sends a POST request to /save, we catch it like a pro 🥷
+app.post('/save', (req, res) => {
+    const userData = req.body; // Grab the juicy data the client sent 🍊
 
-  fs.readFile(DATA_FILE, "utf8", (err, data) => {
-    let records = [];
-    if (!err) {
-      try {
-        records = JSON.parse(data);
-      } catch (e) {
-        console.error("JSON parse error:", e);
-      }
-    }
-    records.push(newRecord);
-
-    fs.writeFile(DATA_FILE, JSON.stringify(records, null, 2), (err) => {
-      if (err) return res.status(500).json({ message: "Write error" });
-      res.json({ message: "Saved!" });
+    // Let's write this data to a file named 'user_data.json' because persistence is cool 📂
+    fs.writeFile('user_data.json', JSON.stringify(userData, null, 2), (err) => {
+        if (err) {
+            // Uh oh... file writing said "nope" 😵
+            console.log('❌ Error saving file:', err);
+            return res.status(500).send("Error saving data"); // Let the frontend know we failed, gently
+        }
+        // All is well in the kingdom! 🏰
+        res.send('✅ Data Saved');
     });
-  });
 });
 
-// ------------ start ------------
-app.listen(PORT, () => console.log(`API running on http://localhost:${PORT}`));
+// Cranking up the server like a DJ on Friday night 🎧
+app.listen(PORT, () => {
+    console.log(`🚀 Server running on port ${PORT}`);
+});
