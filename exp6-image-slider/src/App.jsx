@@ -1,26 +1,22 @@
-// Import images
-import img1 from "./assets/image1.jpg";
-import img2 from "./assets/image2.jpg";
-import img3 from "./assets/image3.jpg";
-// You can add more images later if needed:
-// import img4 from "./assets/image4.jpg";
-// import img5 from "./assets/image5.jpg";
-
-// Import the ImageSlider component
+import React from "react";
 import ImageSlider from "./ImageSlider";
 
-// Store images in an array
-const images = [img1, img2, img3];
-
-// Main App component
 function App() {
+  const imageList = [
+  "https://images.unsplash.com/photo-1746980885762-d31b3ee71d4c?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+  "https://plus.unsplash.com/premium_photo-1675237625804-25deee797cf7?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+];
+;
+
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
-      <ImageSlider 
-        images={images} 
-        autoplay={true} 
-        slidesPerView={1} 
-        loop={true} 
+    <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center">
+      <h1 className="text-3xl font-bold mb-6">Dynamic Image Slider</h1>
+      <ImageSlider
+        images={imageList}
+        autoplay={true}
+        interval={2500}
+        showNavigation={true}
+        transitionSpeed={800}
       />
     </div>
   );

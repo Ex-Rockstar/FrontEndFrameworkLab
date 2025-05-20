@@ -1,30 +1,38 @@
+import React from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation, Autoplay } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
-import "swiper/css/pagination";
-import { Navigation, Pagination, Autoplay } from "swiper/modules";
 
-const ImageSlider = ({ images, autoplay = true, slidesPerView = 1, loop = true }) => {
+const ImageSlider = ({
+  images = [],
+  autoplay = false,
+  interval = 3000,
+  showNavigation = true,
+  transitionSpeed = 500,
+}) => {
+  if (!images || images.length === 0) return <p>No images to display</p>;
+
   return (
-    <Swiper
-      modules={[Navigation, Pagination, Autoplay]}
-      navigation
-      pagination={{ clickable: true }}
-      autoplay={autoplay ? { delay: 3000 } : false}
-      loop={loop}
-      slidesPerView={slidesPerView}
-      className="w-full max-w-3xl"
-    >
-      {images.map((img, index) => (
-        <SwiperSlide key={index}>
-          <img
-            src={img}
-            alt={`Slide ${index + 1}`}
-            className="w-full h-auto rounded-lg shadow-lg"
-          />
-        </SwiperSlide>
-      ))}
-    </Swiper>
+    <div className="w-full max-w-3xl mx-auto p-4">
+      <Swiper
+        modules={[Navigation, Autoplay]}
+        navigation={showNavigation}
+        autoplay={autoplay ? { delay: interval } : false}
+        speed={transitionSpeed}
+        loop
+      >
+        {images.map((src, index) => (
+          <SwiperSlide key={index}>
+            <img
+              src={src}
+              alt={`slide-${index}`}
+              className="w-full h-[400px] object-cover rounded-xl"
+            />
+          </SwiperSlide>
+        ))}
+      </Swiper>
+    </div>
   );
 };
 
